@@ -127,7 +127,7 @@
               
               var aLink='<a class="albumlink" href="' + tableEntry.link + '" target="_blank">'+tableEntry.title+'</a>';
 
-              var s=(tableEntry.authKey != '' ? "&authkey="+tableEntry.authKey : "");
+              var s=(tableEntry.authKey != '' ? "<br>authkey="+tableEntry.authKey : "");
               var r=tableEntry.rights;
               var c='';
               switch( tableEntry.rights ) {
