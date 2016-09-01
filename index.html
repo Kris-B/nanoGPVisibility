@@ -120,18 +120,20 @@
               var tableEntry=tableEntries[i];
               
               var btVisibility = '<div class="btn-group">';
-              btVisibility +='<button data-permission="private" class="btn btn-danger change-permission '+(tableEntry.rights=='private' ? "disabled": "" )+'" href=""><i class="fa fa-user"></i> Hidden</button>';
-              btVisibility +='<button data-permission="protected" class="btn btn-warning change-permission '+(tableEntry.rights=='protected' ? "disabled": "" )+'" href=""><i class="fa fa-ban"></i> Protected</button>';
+              btVisibility +='<button data-permission="protected" class="btn btn-warning change-permission '+(tableEntry.rights=='protected' ? "disabled": "" )+'" href=""><i class="fa fa-ban"></i> Hidden</button>';
+              btVisibility +='<button data-permission="private" class="btn btn-danger change-permission '+(tableEntry.rights=='private' ? "disabled": "" )+'" href=""><i class="fa fa-user"></i> Private</button>';
               btVisibility +='<button data-permission="public" class="btn btn-success change-permission '+(tableEntry.rights=='public' ? "disabled": "" )+'" href=""><i class="fa fa-cloud"></i> Public</button>';
               btVisibility +='</div>';
               
               var aLink='<a class="albumlink" href="' + tableEntry.link + '" target="_blank">'+tableEntry.title+'</a>';
 
-              var s=(tableEntry.authKey != '' ? "&authkey="+tableEntry.authKey : "");
+              var s=(tableEntry.authKey != '' ? "<br>authkey="+tableEntry.authKey : "");
+              var r=tableEntry.rights;
               var c='';
               switch( tableEntry.rights ) {
                 case 'protected':
                   c='danger';
+                  r='hidden';
                   break;
                 case 'private':
                   c='warning';
@@ -141,7 +143,7 @@
                   break;
               }
 
-              $('#lstAlbums > tbody:last-child').append('<tr data-index="'+i+'" class=""><td>'+aLink+'</td><td><p class="text-'+c+'">'+tableEntry.rights+'</p></td><td>'+btVisibility+'</td><td>'+tableEntry.albumid + s + '</td></tr>');
+              $('#lstAlbums > tbody:last-child').append('<tr data-index="'+i+'" class=""><td>'+aLink+'</td><td><p class="text-'+c+'">'+r+'</p></td><td>'+btVisibility+'</td><td>'+tableEntry.albumid + s + '</td></tr>');
             }
 
 
@@ -168,8 +170,9 @@
           tableEntry = tableEntries[index],
           url = 'nanogpvisibility.php',
           new_access = jQuery(e.target).attr('data-permission');
-            
-        	$.ajax({
+          
+          jQuery("body").css("cursor", "progress");
+        	jQuery.ajax({
             url: url,
             dataType: 'json',
             method:'POST',
@@ -181,10 +184,12 @@
             }
           })
           .done(function( msg ) {
+            jQuery("body").css("cursor", "default");
             console.log( "Data Saved: " + msg );
             location.reload();
           })
           .fail( function( data ) {
+            jQuery("body").css("cursor", "default");
             console.dir(data);
             if ( data.responseCode )
               console.log( data.responseCode );
