@@ -1,40 +1,226 @@
-<?php
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html lang="en">
+<head>
+  <meta name="google-signin-scope" content="https://picasaweb.google.com/data/">
+  <meta name="google-signin-client_id" content="992551522822-7nstfoq17gn0u27kmcfcgnnfbp13ndl3.apps.googleusercontent.com">
 
-$new_access= filter_var($_POST['new_access'], FILTER_SANITIZE_STRING);
-	
-	if (!in_array($new_access,array('public','private','protected'))){
-		die('permission not supported.');
-	}
-	
-	$userid = filter_var($_POST['userid'], FILTER_SANITIZE_STRING);
-	$albumid = filter_var($_POST['albumid'], FILTER_SANITIZE_STRING);
-	$access_token = filter_var($_POST['access_token'], FILTER_SANITIZE_STRING);
-	
-	if (empty($access_token)){
-		die();
-	}
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
-	$url = 'https://picasaweb.google.com/data/entry/api/user/' . $userid . '/albumid/' . $albumid .'?alt=json';
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" />
 
-	$xml="<entry xmlns='http://www.w3.org/2005/Atom' xmlns:gphoto='http://schemas.google.com/photos/2007'>
-	  <gphoto:access>".$new_access."</gphoto:access>
-	</entry>";
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
 
-	$url=$url."&".http_build_query(array('access_token'=>$access_token));
+  <style>
+    * { font-family: 'Roboto Condensed', sans-serif; }
+    .btn { 
+      padding: 1px 5px;
+    }
+  </style>
+  
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-	$curl = curl_init($url);
-	curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PATCH");
-	curl_setopt($curl, CURLOPT_HEADER, false);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/xml',"GData-Version: 2","If-Match: *"));
-	curl_setopt($curl, CURLOPT_POSTFIELDS, $xml);
-	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($curl, CURLOPT_VERBOSE, true);
+    ga('create', 'UA-39069349-7', 'auto');
+    ga('send', 'nanoGPVisibility');
+  </script>
+  
+  <title>nanoGPVisibility</title>
+  <meta name="description" content="Manage the visibility of your photo albums on Google Photos">
+  
+</head>
+<body>
+  <div class="container">
 
-	// Make the REST call, returning the result
-	$response = curl_exec($curl);
+    <h2>nanoGPVisibility - Manage the visibility of your photo albums on Google Photos</h2>
+    <hr>
 
-	$resp=json_decode($response,true);
+    <p>
+      <a style="display:none; float: left; margin-right: 10px; height: 36px;" class="btn btn-warning" id="sign-out" href="#">Sign out</a>
+      <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+      <div style="clear: both;"></div>
+    </p>
 
-	echo json_encode(array("response"=>$resp));	
-?>
+    <script>
+      var tableEntries;
+
+      function onSignIn(googleUser) {
+        // Useful data for your client-side scripts:
+        var profile = googleUser.getBasicProfile(),
+        id_token = googleUser.getAuthResponse().id_token,
+        access_token = googleUser.getAuthResponse().access_token;
+            
+
+        //console.log("ID: " + profile.getId()); // Don't send this directly to your server!
+        //console.log("Name: " + profile.getName());
+        //console.log("Image URL: " + profile.getImageUrl());
+        //console.log("Email: " + profile.getEmail());
+
+        // The ID token you need to pass to your backend:
+
+        //console.log("ID Token: " + id_token);
+        jQuery('#sign-out').show();
+
+        jQuery('#userID').text('hello, ' + profile.getName() + '. Your userID is: '+ profile.getId());
+        
+        jQuery.ajax( {
+          url: 'https://picasaweb.google.com/data/feed/api/user/' + profile.getId() + '?alt=json&access=all&access_token=' + access_token,
+          dataType: 'json',
+          method:'GET',
+          success: function(data){
+            var i, j;
+            tableEntries = [];
+
+
+            for(var i=0; i<data.feed.entry.length; i++) {
+
+              var entry = data.feed.entry[i],
+              title = entry.title.$t,
+              userid = entry.gphoto$user.$t,
+              albumid = entry.gphoto$id.$t,
+              link,
+              authKeyMatchResult,
+              tableEntry = {};
+
+              for(var j=0; j<entry.link.length; j++) {
+                if (entry.link[j].rel === "alternate") {
+                  tableEntry.link = entry.link[j].href;
+                  break;
+                }
+              }
+
+              tableEntry.userid = userid;
+              tableEntry.title = title;
+              tableEntry.albumid = albumid;
+              tableEntry.rights = entry.rights.$t;
+              tableEntry.authKey = '';
+              tableEntry.access_token = access_token;
+              
+              authKeyMatchResult = tableEntry.link.match(/authkey=([^&]*)/);
+              
+              if (null !== authKeyMatchResult && authKeyMatchResult.length > 1) {
+                tableEntry.authKey = authKeyMatchResult[1];
+              }
+
+              tableEntries.push(tableEntry);
+            }
+            
+            // sort on title
+            tableEntries.sort(function (a, b) {
+              return( (a.title.toUpperCase() < b.title.toUpperCase()) ? -1 : ((a.title.toUpperCase() > b.title.toUpperCase()) ? 1 : 0) );
+            });
+
+            // render the table
+            for(var i=0; i<tableEntries.length; i++) {
+              var tableEntry=tableEntries[i];
+              
+              var btVisibility = '<div class="btn-group">';
+              btVisibility +='<button data-permission="protected" class="btn btn-warning change-permission '+(tableEntry.rights=='protected' ? "disabled": "" )+'" href=""><i class="fa fa-ban"></i> Hidden</button>';
+              btVisibility +='<button data-permission="private" class="btn btn-danger change-permission '+(tableEntry.rights=='private' ? "disabled": "" )+'" href=""><i class="fa fa-user"></i> Private</button>';
+              btVisibility +='<button data-permission="public" class="btn btn-success change-permission '+(tableEntry.rights=='public' ? "disabled": "" )+'" href=""><i class="fa fa-cloud"></i> Public</button>';
+              btVisibility +='</div>';
+              
+              var aLink='<a class="albumlink" href="' + tableEntry.link + '" target="_blank">'+tableEntry.title+'</a>';
+
+              var s=(tableEntry.authKey != '' ? "&authkey="+tableEntry.authKey : "");
+              var r=tableEntry.rights;
+              var c='';
+              switch( tableEntry.rights ) {
+                case 'protected':
+                  c='danger';
+                  r='hidden';
+                  break;
+                case 'private':
+                  c='warning';
+                  break;
+                case 'public':
+                  c='success';
+                  break;
+              }
+
+              $('#lstAlbums > tbody:last-child').append('<tr data-index="'+i+'" class=""><td>'+aLink+'</td><td><p class="text-'+c+'">'+r+'</p></td><td>'+btVisibility+'</td><td>'+tableEntry.albumid + s + '</td></tr>');
+            }
+
+
+          }
+        });
+      };
+
+      jQuery( document ).ready(function() {
+
+        jQuery(document).on('click', '#sign-out', function(e){
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                location.reload();
+            });
+        });
+        
+        jQuery(document).on('click', '.change-permission', function(e){
+        	e.preventDefault();
+          var $btn=jQuery(e.target);
+          
+          if( $btn.hasClass('disabled') ) { return; }
+        
+        	var index = $btn.parents('tr').attr('data-index'),
+          tableEntry = tableEntries[index],
+          url = 'nanogpvisibility.php',
+          new_access = jQuery(e.target).attr('data-permission');
+          
+          jQuery("body").css("cursor", "progress");
+        	jQuery.ajax({
+            url: url,
+            dataType: 'json',
+            method:'POST',
+            data: {
+              'userid': tableEntry.userid,
+              'albumid': tableEntry.albumid,
+              'access_token': tableEntry.access_token,
+              'new_access': new_access
+            }
+          })
+          .done(function( msg ) {
+            jQuery("body").css("cursor", "default");
+            console.log( "Data Saved: " + msg );
+            location.reload();
+          })
+          .fail( function( data ) {
+            jQuery("body").css("cursor", "default");
+            console.dir(data);
+            if ( data.responseCode )
+              console.log( data.responseCode );
+          });        	
+        });
+
+      });
+    </script>
+
+    <br>
+    <h4 id="userID"></h4>
+    <br>
+    
+    <div class="table-responsive">
+      <table id="lstAlbums" class="table table-striped table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Visibility</th>
+            <th>Change visibility</th>
+            <th>albumID</th>
+            <!-- <th>Private key</th> -->
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+    <p>nanoGPVisibility by Christophe Brisbois - original code by Sven Bluege</p>
+  
+    
+  </div>
+</body>
+</html>
