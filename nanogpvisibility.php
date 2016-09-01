@@ -1,3 +1,5 @@
+<?php
+
 $new_access= filter_var($_POST['new_access'], FILTER_SANITIZE_STRING);
 	
 	if (!in_array($new_access,array('public','private','protected'))){
@@ -35,3 +37,4 @@ $new_access= filter_var($_POST['new_access'], FILTER_SANITIZE_STRING);
 	$resp=json_decode($response,true);
 
 	echo json_encode(array("response"=>$resp));	
+?>
