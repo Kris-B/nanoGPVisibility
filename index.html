@@ -130,20 +130,24 @@
               var s=(tableEntry.authKey != '' ? "<br>authkey="+tableEntry.authKey : "");
               var r=tableEntry.rights;
               var c='';
+              var ic='';
               switch( tableEntry.rights ) {
                 case 'protected':
                   c='danger';
                   r='hidden';
+                  ic='<i class="fa fa-ban">';
                   break;
                 case 'private':
-                  c='warning';
+                  c='warning';c
+                  ic='<i class="fa fa-user">';
                   break;
                 case 'public':
                   c='success';
+                  ic='<i class="fa fa-cloud">';
                   break;
               }
 
-              $('#lstAlbums > tbody:last-child').append('<tr data-index="'+i+'" class=""><td>'+aLink+'</td><td><p class="text-'+c+'">'+r+'</p></td><td>'+btVisibility+'</td><td>'+tableEntry.albumid + s + '</td></tr>');
+              $('#lstAlbums > tbody:last-child').append('<tr data-index="'+i+'" class=""><td>'+aLink+'</td><td><p class="text-'+c+'">'+ic+' '+r+'</p></td><td>'+btVisibility+'</td><td>'+tableEntry.albumid + s + '</td></tr>');
             }
 
 
