@@ -32,7 +32,7 @@
 </head>
 <body>
 
-<h2>Manage the visibility of your Google Photos albums.</h2>
+<h2>nanoGPVisibility - Manage the visibility of your Google Photos albums.</h2>
 <p>Original code by Sven Bluege</p>
 
 <p>
@@ -175,7 +175,7 @@
         	e.preventDefault();
         	var index = jQuery(e.target).parents('tr').attr('data-index'),
         		tableEntry = tableEntries[index],
-        		url = 'change_permission.php',
+        		url = 'nanogpvisibility.php',
         		new_access = jQuery(e.target).attr('data-permission');
         	
         	$.ajax({
