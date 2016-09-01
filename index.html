@@ -175,6 +175,7 @@
         });
         
         jQuery(document).on('click', '.change-permission', function(e){
+alert('go');        	
         	e.preventDefault();
         	var index = jQuery(e.target).parents('tr').attr('data-index'),
         		tableEntry = tableEntries[index],
