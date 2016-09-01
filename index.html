@@ -1,12 +1,11 @@
 
-
 <html lang="en">
 <head>
     <meta name="google-signin-scope" content="https://picasaweb.google.com/data/">
+
     <!-- <meta name="google-signin-client_id" content="765859880369-7ouk5plitha96v57hbkbpko5tgnmhv8g.apps.googleusercontent.com"> -->
     <meta name="google-signin-client_id" content="992551522822-7nstfoq17gn0u27kmcfcgnnfbp13ndl3.apps.googleusercontent.com">
-    
-    
+
     <script src="https://apis.google.com/js/platform.js" async defer></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
@@ -34,9 +33,6 @@
     </style>
 </head>
 <body>
-
-<h2>nanoGPVisibility - Manage the visibility of your Google Photos albums.</h2>
-<p>Original code by Sven Bluege</p>
 
 <p>
 <a style="display:none; float: left; margin-right: 10px; height: 36px;" class="btn btn-warning" id="sign-out" href="#">Sign out</a>
@@ -175,30 +171,33 @@
         });
         
         jQuery(document).on('click', '.change-permission', function(e){
-alert('go');        	
         	e.preventDefault();
         	var index = jQuery(e.target).parents('tr').attr('data-index'),
         		tableEntry = tableEntries[index],
+        		// url = 'change_permission.php',
         		url = 'nanogpvisibility.php',
         		new_access = jQuery(e.target).attr('data-permission');
-        	
+console.log(url);        	
         	$.ajax({
-			  url: url,
-			  dataType: 'json',
-              method:'POST',
-              data: {
-              	  	'userid': tableEntry.userid,
-              	  	'albumid': tableEntry.albumid,
-              	  	'access_token': tableEntry.access_token,
-              	    'new_access': new_access
-              	}
+            url: url,
+            dataType: 'json',
+            method:'POST',
+            data: {
+              'userid': tableEntry.userid,
+              'albumid': tableEntry.albumid,
+              'access_token': tableEntry.access_token,
+              'new_access': new_access
+            }
               	
-			})
-			  .done(function( msg ) {
-			    console.log( "Data Saved: " + msg );
-			    location.reload();
-			  });
-        	
+          })
+          .done(function( msg ) {
+            console.log( "Data Saved: " + msg );
+            location.reload();
+          })
+          .fail(function(data) {
+            if ( data.responseCode )
+              console.log( data.responseCode );
+          });        	
         });
 
 
@@ -213,8 +212,8 @@ alert('go');
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-62812-16', 'auto');
-  ga('send', 'pageview');
+  // ga('create', 'UA-62812-16', 'auto');
+  // ga('send', 'pageview');
 
 </script>
 
