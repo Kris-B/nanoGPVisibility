@@ -194,7 +194,8 @@ console.log(url);
             console.log( "Data Saved: " + msg );
             location.reload();
           })
-          .fail(function(data) {
+          .fail( function(data) {
+            console.dir(data);
             if ( data.responseCode )
               console.log( data.responseCode );
           });        	
