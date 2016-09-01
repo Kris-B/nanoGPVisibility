@@ -1,6 +1,6 @@
-# nano gpvisibility
-Manage Google Photos albums visibility
+# nanoGPVisibility
+Manage the visibility of your photo albums on Google Photos
 
 http://nanogpvisibility.herokuapp.com/index.html
 
-https://www.svenbluege.de/picasa/v1.1
+
