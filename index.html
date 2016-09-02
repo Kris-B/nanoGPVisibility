@@ -41,6 +41,7 @@
     <hr>
 
     <p>
+      <p id="pleaseSignIn">Please sign-in to Google</p>
       <a style="display:none; float: left; margin-right: 10px; height: 36px;" class="btn btn-warning" id="sign-out" href="#">Sign out</a>
       <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
       <div style="clear: both;"></div>
@@ -65,6 +66,7 @@
 
         //console.log("ID Token: " + id_token);
         jQuery('#sign-out').show();
+        jQuery('#pleaseSignIn').hide();
 
         jQuery('#userID').text('hello, ' + profile.getName() + '. Your userID is: '+ profile.getId());
         
