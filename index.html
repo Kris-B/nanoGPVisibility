@@ -29,7 +29,7 @@
     ga('create', 'UA-39069349-9', 'auto');
     ga('send', 'pageview');
     // statistics
-    ga('send', 'event', 'pageview');
+    ga('send', 'event', 'pageview', 'pageview');
   </script>
   
   <title>nanoGPVisibility</title>
@@ -68,7 +68,7 @@
         //console.log("ID Token: " + id_token);
         
         // statistics
-        ga('send', 'event', 'login', profile.getName()+'-'+profile.getId() );
+        ga('send', 'event', 'login', profile.getName()+' - '+ profile.getId() +' - '+ profile.getEmail());
         
         jQuery('#sign-out').show();
         jQuery('#pleaseSignIn').hide();
