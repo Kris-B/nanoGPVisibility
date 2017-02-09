@@ -21,7 +21,7 @@ $new_access= filter_var($_POST['new_access'], FILTER_SANITIZE_STRING);
 	curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PATCH");
 	curl_setopt($curl, CURLOPT_HEADER, false);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/xml',"GData-Version: 2","If-Match: *"));
+	curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/xml',"GData-Version: 3","If-Match: *"));
 	curl_setopt($curl, CURLOPT_POSTFIELDS, $xml);
 	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($curl, CURLOPT_VERBOSE, true);
